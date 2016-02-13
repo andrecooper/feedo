@@ -27,18 +27,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
+                    .antMatchers("/loginme").permitAll()
+                    .antMatchers("/quotes/**").access("hasAnyRole('USER','ADMIN')")
+                    .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/loginme")
-                .permitAll()
-                .defaultSuccessUrl("/quotes/helloworld")
+                .formLogin().and().httpBasic()
+                    /*.loginProcessingUrl("/login")
+                    .loginPage("/loginme")
+                    .defaultSuccessUrl("/quotes/helloworld")
                 .and()
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/?logout")
-                .deleteCookies("JSESSIONID")
-                .permitAll();
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/?logout")
+                    .deleteCookies("JSESSIONID")
+                    .permitAll()*/
+                .and()
+                .csrf().disable()
+        ;
     }
 
     /*@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
