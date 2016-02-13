@@ -34,22 +34,8 @@ public class FeedService {
             e.printStackTrace();
         }
 
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        Future<List<Quote>> marketDataFuture = executorService.submit(marketService);
-        Future<List<Quote>> nbuDataFuture = executorService.submit(nbuService);
 
-        LinkedList<Quote> nbuQuotes = null;
-        LinkedList<Quote> marketQuotes = null;
-        try {
-            nbuQuotes = new LinkedList<>(nbuDataFuture.get());
-            marketQuotes = new LinkedList<>(marketDataFuture.get());
-            System.out.println("NBU FUTURE: " + nbuQuotes);
-            System.out.println("MARKET FUTURE: " + marketQuotes);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        return getDiff(startDate, endDate, nbuQuotes, marketQuotes);
+        return null;
     }
 
     private List<Quote> getDiff(Date startDate, Date endDate, LinkedList<Quote> nbuQuotes, LinkedList<Quote> marketQuotes) {
