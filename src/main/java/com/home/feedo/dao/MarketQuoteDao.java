@@ -1,6 +1,6 @@
 package com.home.feedo.dao;
 
-import com.home.feedo.entity.Quote;
+import com.home.feedo.model.Quote;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
