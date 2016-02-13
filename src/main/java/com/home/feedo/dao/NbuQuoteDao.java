@@ -1,6 +1,6 @@
 package com.home.feedo.dao;
 
-import com.home.feedo.entity.NbuQuote;
+import com.home.feedo.model.NbuQuote;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;

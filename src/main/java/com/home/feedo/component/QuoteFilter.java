@@ -1,6 +1,6 @@
 package com.home.feedo.component;
 
-import com.home.feedo.entity.Quote;
+import com.home.feedo.model.Quote;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

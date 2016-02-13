@@ -2,7 +2,7 @@ package com.home.feedo.service;
 
 import com.home.feedo.component.QuoteFilter;
 import com.home.feedo.dao.MarketQuoteDao;
-import com.home.feedo.entity.Quote;
+import com.home.feedo.model.Quote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
