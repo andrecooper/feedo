@@ -15,9 +15,6 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    /**
-     * Create two in-memory users (user & admin).
-     */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
@@ -33,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/loginmeg")
+                .loginPage("/loginme")
                 .permitAll()
                 .defaultSuccessUrl("/quotes/helloworld")
                 .and()
@@ -44,8 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
-    @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
+    /*@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
     private static class GlobalSecurityConfiguration extends GlobalMethodSecurityConfiguration {
-    }
+    }*/
 
 }
