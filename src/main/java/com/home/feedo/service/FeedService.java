@@ -4,6 +4,8 @@ import com.home.feedo.model.Quote;
 import com.home.feedo.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -21,7 +23,7 @@ public class FeedService {
     @Autowired
     private MarketService marketService;
 
-    public List<Quote> getData(){
+    public List<Quote> getData() {
         System.out.println("FEED SERVICE CALL");
 
         Date startDate = new Date();
@@ -34,17 +36,33 @@ public class FeedService {
             e.printStackTrace();
         }
 
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        Future<List<Quote>> marketDataFuture = executorService.submit(marketService);
+        Future<List<Quote>> nbuDataFuture = executorService.submit(nbuService);
 
-        return null;
+        LinkedList<Quote> nbuQuotes = new LinkedList<>();
+        LinkedList<Quote> marketQuotes = null;
+        try {
+            nbuQuotes = new LinkedList<>(nbuDataFuture.get());
+            marketQuotes = new LinkedList<>(marketDataFuture.get());
+            System.out.println("NBU FUTURE: " + nbuQuotes);
+            System.out.println("MARKET FUTURE: " + marketQuotes);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return getDiff(startDate, endDate, nbuQuotes, marketQuotes);
+
     }
 
     private List<Quote> getDiff(Date startDate, Date endDate, LinkedList<Quote> nbuQuotes, LinkedList<Quote> marketQuotes) {
-        HashMap<Date,Quote> nbuQuoteMap = new HashMap<>();
+        HashMap<Date, Quote> nbuQuoteMap = new HashMap<>();
         for (Quote quote : nbuQuotes) {
             nbuQuoteMap.put(quote.getDate(), quote);
         }
+        System.out.println("NBU MAP:" + nbuQuoteMap);
 
-        HashMap<Date,Quote> marketQuoteMap = new HashMap<>();
+        HashMap<Date, Quote> marketQuoteMap = new HashMap<>();
         for (Quote quote : marketQuotes) {
             marketQuoteMap.put(quote.getDate(), quote);
         }
@@ -52,14 +70,28 @@ public class FeedService {
         List<Date> datesPeriod = DateUtils.getPeriod(startDate, endDate);
         List<Quote> diffQuoteList = new LinkedList<>();
         for (Date date : datesPeriod) {
+//            System.out.println(date);
             Quote nbuQuote = nbuQuoteMap.get(date);
             Quote marketQuote = marketQuoteMap.get(date);
+            if (nbuQuote == null){
+                nbuQuote = new Quote();
+                nbuQuote.setAsk(new BigDecimal(0));
+                nbuQuote.setBid(new BigDecimal(0));
+                nbuQuote.setAverage(new BigDecimal(0));
 
+            }
+            if (marketQuote == null){
+                marketQuote = new Quote();
+                marketQuote.setAsk(new BigDecimal(0));
+                marketQuote.setBid(new BigDecimal(0));
+                marketQuote.setAverage(new BigDecimal(0));
+            }
             Quote diffQuote = new Quote();
+            System.out.println(marketQuote + " : " + nbuQuote);
             diffQuote.setDate(date);
-            diffQuote.setBid(marketQuote.getBid()-nbuQuote.getBid());
-            diffQuote.setAsk(marketQuote.getAsk()-nbuQuote.getAsk());
-            diffQuote.setAvarage(marketQuote.getAsk()-nbuQuote.getAsk());
+            diffQuote.setBid(marketQuote.getBid().subtract(nbuQuote.getBid()));
+            diffQuote.setAsk(marketQuote.getAsk().subtract(nbuQuote.getAsk()));
+            diffQuote.setAverage(marketQuote.getAsk().subtract(nbuQuote.getAsk()));
 
             diffQuoteList.add(diffQuote);
         }

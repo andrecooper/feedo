@@ -1,6 +1,7 @@
 package com.home.feedo.dao;
 
 import com.home.feedo.model.NbuQuote;
+import com.home.feedo.utils.DateUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,11 @@ public class NbuQuoteDao {
         RestTemplate restTemplate = new RestTemplate();
         ParameterizedTypeReference<List<NbuQuote>> typeRef = new ParameterizedTypeReference<List<NbuQuote>>() {};
         ResponseEntity<List<NbuQuote>> listResponseEntity = restTemplate.exchange(MINFIN_URL, HttpMethod.GET, null, typeRef);
-        return listResponseEntity.getBody();
+        List<NbuQuote> nbuQuotes = listResponseEntity.getBody();
+        for (NbuQuote nbuQuote : nbuQuotes) {
+            nbuQuote.setDate(DateUtils.roundDate(nbuQuote.getDate()));
+        }
+        return nbuQuotes;
     }
 
 }

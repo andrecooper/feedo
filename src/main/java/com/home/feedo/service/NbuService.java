@@ -7,6 +7,7 @@ import com.home.feedo.model.Quote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,11 +61,13 @@ public class NbuService implements Callable<List<Quote>> {
         for (NbuQuote nbuQuote : minfinPricesList) {
             Quote quote = new Quote();
             quote.setDate(nbuQuote.getDate());
-            Double ask = nbuQuote.getAsk();
-            Double bid = nbuQuote.getBid();
+
+            BigDecimal ask = nbuQuote.getAsk();
+            BigDecimal bid = nbuQuote.getBid();
+
             quote.setAsk(ask);
             quote.setBid(bid);
-            quote.setAvarage((bid+ask)/2);
+            quote.setAverage((ask.add(bid)).divide(BigDecimal.valueOf(2)));
             quoteList.add(quote);
         }
         return quoteList;

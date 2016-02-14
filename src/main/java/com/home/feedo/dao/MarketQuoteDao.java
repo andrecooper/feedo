@@ -1,9 +1,11 @@
 package com.home.feedo.dao;
 
 import com.home.feedo.model.Quote;
+import com.home.feedo.utils.DateUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,17 +29,18 @@ public class MarketQuoteDao {
             }
 
             String dateString = marketPriceItemList.get(0);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             Date date = null;
             try {
                 date = dateFormat.parse(dateString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            marketQuoteItem.setDate(date);
-            marketQuoteItem.setBid(Double.valueOf(marketPriceItemList.get(1)));
-            marketQuoteItem.setAsk(Double.valueOf(marketPriceItemList.get(2)));
-            marketQuoteItem.setAvarage(Double.valueOf(marketPriceItemList.get(3)));
+
+            marketQuoteItem.setDate(DateUtils.roundDate(date));
+            marketQuoteItem.setBid(new BigDecimal(marketPriceItemList.get(1)));
+            marketQuoteItem.setAsk(new BigDecimal(marketPriceItemList.get(2)));
+            marketQuoteItem.setAverage(new BigDecimal(marketPriceItemList.get(3)));
             marketQuoteList.add(marketQuoteItem);
         }
 

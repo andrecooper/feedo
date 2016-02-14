@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -17,30 +19,14 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping(value = "/feedo")
 public class IndexController {
 
-    @Autowired
-    private FeedService feedService;
-
-
     @RequestMapping(value = "/")
-    public ModelAndView getMainPage(){
+    public ModelAndView getMainPage(HttpServletRequest request){
+
         ModelAndView mv = new ModelAndView();
         mv.setViewName("main");
         return mv;
-    }
-
-    @RequestMapping(value = "/diff", produces = "application/json")
-    @ResponseBody
-    public List<Quote> getQuotesDiff(){
-        return feedService.getData();
-    }
-
-    @RequestMapping(value = "/helloworld", produces = "application/json")
-    @ResponseBody
-    public String getGreeting(){
-        return "Helloworld";
     }
 
 }

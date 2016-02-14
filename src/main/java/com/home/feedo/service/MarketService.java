@@ -12,10 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Created by andrew on 09.02.16.
- */
-
 @Service
 public class MarketService implements Callable<List<Quote>> {
 
@@ -47,7 +43,9 @@ public class MarketService implements Callable<List<Quote>> {
         }
 
         List<Quote> marketQuoteList = quoteDao.getData();
+        System.out.println("MARKET DATA BEFORE FILTER: " + marketQuoteList);
         quoteFilter.filterByDate(marketQuoteList,startDate,endDate);
+        System.out.println("MARKET DATA FILTER: " + marketQuoteList);
 
         return marketQuoteList;
     }
