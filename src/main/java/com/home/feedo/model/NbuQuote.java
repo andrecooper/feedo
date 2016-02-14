@@ -1,17 +1,14 @@
 package com.home.feedo.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
-
-/**
- * Created by andrew on 09.02.16.
- */
 
 public class NbuQuote {
 
     private Date date;
-    private Double bid;
-    private Double ask;
-    private Double vol;
+    private BigDecimal bid;
+    private BigDecimal ask;
+    private BigDecimal vol;
 
     public Date getDate() {
         return date;
@@ -21,38 +18,28 @@ public class NbuQuote {
         this.date = date;
     }
 
-    public Double getBid() {
+    public BigDecimal getBid() {
         return bid;
     }
 
-    public void setBid(Double bid) {
+    public void setBid(BigDecimal bid) {
         this.bid = bid;
     }
 
-    public Double getAsk() {
+    public BigDecimal getAsk() {
         return ask;
     }
 
-    public void setAsk(Double ask) {
+    public void setAsk(BigDecimal ask) {
         this.ask = ask;
     }
 
-    public Double getVol() {
+    public BigDecimal getVol() {
         return vol;
     }
 
-    public void setVol(Double vol) {
+    public void setVol(BigDecimal vol) {
         this.vol = vol;
-    }
-
-    @Override
-    public String toString() {
-        return "MinfinPrice{" +
-                "date=" + date +
-                ", bid=" + bid +
-                ", ask=" + ask +
-                ", vol=" + vol +
-                '}';
     }
 
     @Override
@@ -77,5 +64,15 @@ public class NbuQuote {
         result = 31 * result + (ask != null ? ask.hashCode() : 0);
         result = 31 * result + (vol != null ? vol.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "NbuQuote{" +
+                "date=" + date +
+                ", bid=" + bid +
+                ", ask=" + ask +
+                ", vol=" + vol +
+                '}';
     }
 }

@@ -1,7 +1,5 @@
 package com.home.feedo.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -27,22 +25,13 @@ public class DateUtils {
         return datesPeriod;
     }
 
-//    public static void main(String[] args) {
-//        Date startDate = new Date();
-//        Date endDate = new Date();
-//        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd:MM:yyyy");
-//        try {
-//            startDate = dateFormat1.parse("05:01:2016");
-//            endDate = dateFormat1.parse("31:01:2016");
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("START: " + startDate);
-//        System.out.println("END: " + endDate);
-//        final List<Date> period = getPeriod(startDate, endDate);
-//        for (Date date : period) {
-//            System.out.println(date);
-//        }
-//
-//    }
+    public static Date roundDate (Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR,0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+        return cal.getTime();
+    }
 }
