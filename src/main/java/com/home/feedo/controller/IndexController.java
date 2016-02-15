@@ -14,14 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
-/**
- * Created by andrew on 07.02.16.
- */
 
 @Controller
 public class IndexController {
 
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "/feed")
     public ModelAndView getMainPage(HttpServletRequest request){
 
         ModelAndView mv = new ModelAndView();

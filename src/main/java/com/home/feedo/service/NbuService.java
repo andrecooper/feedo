@@ -15,10 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Created by andrew on 09.02.16.
- */
-
 @Service
 public class NbuService implements Callable<List<Quote>> {
 
@@ -42,14 +38,6 @@ public class NbuService implements Callable<List<Quote>> {
 
     @Override
     public List<Quote> call() throws Exception {
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd:MM:yyyy");
-        try {
-            startDate = dateFormat1.parse("05:01:2016");
-            endDate = dateFormat1.parse("31:01:2016");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         List<NbuQuote> minfinPricesList = quoteDao.getData();
         List<Quote> quoteList = convertToQuoteList(minfinPricesList);
         quoteFilter.filterByDate(quoteList, startDate,endDate);
@@ -73,4 +61,20 @@ public class NbuService implements Callable<List<Quote>> {
         return quoteList;
     }
 
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 }

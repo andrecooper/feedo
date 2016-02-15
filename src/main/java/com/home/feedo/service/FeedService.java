@@ -5,9 +5,7 @@ import com.home.feedo.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,78 +21,85 @@ public class FeedService {
     @Autowired
     private MarketService marketService;
 
-    public List<Quote> getData() {
+    public List<Quote> getDiffData(Date startDate, Date endDate) {
         System.out.println("FEED SERVICE CALL");
-
-        Date startDate = new Date();
-        Date endDate = new Date();
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd:MM:yyyy");
-        try {
-            startDate = dateFormat1.parse("05:01:2016");
-            endDate = dateFormat1.parse("31:01:2016");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         ExecutorService executorService = Executors.newCachedThreadPool();
+        marketService.setStartDate(startDate);
+        marketService.setEndDate(endDate);
+        nbuService.setStartDate(startDate);
+        nbuService.setEndDate(endDate);
         Future<List<Quote>> marketDataFuture = executorService.submit(marketService);
         Future<List<Quote>> nbuDataFuture = executorService.submit(nbuService);
 
-        LinkedList<Quote> nbuQuotes = new LinkedList<>();
-        LinkedList<Quote> marketQuotes = null;
+        List<Quote> nbuQuotes = null;
+        List<Quote> marketQuotes = null;
         try {
             nbuQuotes = new LinkedList<>(nbuDataFuture.get());
             marketQuotes = new LinkedList<>(marketDataFuture.get());
-            System.out.println("NBU FUTURE: " + nbuQuotes);
-            System.out.println("MARKET FUTURE: " + marketQuotes);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        List<Date> period = DateUtils.getPeriod(DateUtils.roundDate(startDate), DateUtils.roundDate(endDate));
+
+        return getDiff(period, nbuQuotes, marketQuotes);
+
+    }
+
+    public List<Quote> getMarketQuotes(Date startDate, Date endDate) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        marketService.setStartDate(startDate);
+        marketService.setEndDate(endDate);
+        Future<List<Quote>> marketDataFuture = executorService.submit(marketService);
+        List<Quote> quoteList = null;
+        try {
+            quoteList = marketDataFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        return getDiff(startDate, endDate, nbuQuotes, marketQuotes);
-
+        return quoteList;
     }
 
-    private List<Quote> getDiff(Date startDate, Date endDate, LinkedList<Quote> nbuQuotes, LinkedList<Quote> marketQuotes) {
-        HashMap<Date, Quote> nbuQuoteMap = new HashMap<>();
+    public List<Quote> getNbuQuotes(Date startDate, Date endDate) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        nbuService.setStartDate(startDate);
+        nbuService.setEndDate(endDate);
+        Future<List<Quote>> marketDataFuture = executorService.submit(nbuService);
+        List<Quote> quoteList = null;
+        try {
+            quoteList = marketDataFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return quoteList;
+    }
+
+    private List<Quote> getDiff(List<Date> datesPeriod, List<Quote> nbuQuotes, List<Quote> marketQuotes) {
+        Map<Date, Quote> nbuQuoteMap = new HashMap<>();
         for (Quote quote : nbuQuotes) {
             nbuQuoteMap.put(quote.getDate(), quote);
         }
-        System.out.println("NBU MAP:" + nbuQuoteMap);
-
         HashMap<Date, Quote> marketQuoteMap = new HashMap<>();
         for (Quote quote : marketQuotes) {
             marketQuoteMap.put(quote.getDate(), quote);
         }
 
-        List<Date> datesPeriod = DateUtils.getPeriod(startDate, endDate);
         List<Quote> diffQuoteList = new LinkedList<>();
         for (Date date : datesPeriod) {
-//            System.out.println(date);
             Quote nbuQuote = nbuQuoteMap.get(date);
             Quote marketQuote = marketQuoteMap.get(date);
-            if (nbuQuote == null){
-                nbuQuote = new Quote();
-                nbuQuote.setAsk(new BigDecimal(0));
-                nbuQuote.setBid(new BigDecimal(0));
-                nbuQuote.setAverage(new BigDecimal(0));
-
-            }
-            if (marketQuote == null){
-                marketQuote = new Quote();
-                marketQuote.setAsk(new BigDecimal(0));
-                marketQuote.setBid(new BigDecimal(0));
-                marketQuote.setAverage(new BigDecimal(0));
+            if (nbuQuote == null || marketQuote == null) {
+                continue;
             }
             Quote diffQuote = new Quote();
-            System.out.println(marketQuote + " : " + nbuQuote);
             diffQuote.setDate(date);
             diffQuote.setBid(marketQuote.getBid().subtract(nbuQuote.getBid()));
             diffQuote.setAsk(marketQuote.getAsk().subtract(nbuQuote.getAsk()));
-            diffQuote.setAverage(marketQuote.getAsk().subtract(nbuQuote.getAsk()));
-
+            diffQuote.setAverage(marketQuote.getAverage().subtract(nbuQuote.getAverage()));
             diffQuoteList.add(diffQuote);
         }
+
         return diffQuoteList;
     }
 }

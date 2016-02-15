@@ -34,21 +34,25 @@ public class MarketService implements Callable<List<Quote>> {
 
     @Override
     public List<Quote> call() throws Exception {
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd:MM:yyyy");
-        try {
-            startDate = dateFormat1.parse("05:01:2016");
-            endDate = dateFormat1.parse("31:01:2016");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         List<Quote> marketQuoteList = quoteDao.getData();
-        System.out.println("MARKET DATA BEFORE FILTER: " + marketQuoteList);
-        quoteFilter.filterByDate(marketQuoteList,startDate,endDate);
-        System.out.println("MARKET DATA FILTER: " + marketQuoteList);
-
+        quoteFilter.filterByDate(marketQuoteList, startDate, endDate);
         return marketQuoteList;
     }
 
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 }
