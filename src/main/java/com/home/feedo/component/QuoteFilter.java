@@ -15,7 +15,6 @@ public class QuoteFilter {
         List<Quote> removalList = new ArrayList<>();
         for (Quote quote : quotesList) {
             Date date = quote.getDate();
-//            System.out.println("FILTER: " + date + " : " + "\n  before "+ startDate + ": " + date.before(startDate) + "    after "+endDate+": " + date.after(endDate));
             if (date.after(endDate) || date.before(startDate)){
                 removalList.add(quote);
             }

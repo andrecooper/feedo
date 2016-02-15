@@ -1,6 +1,7 @@
 package com.home.feedo.config;
 
 
+import com.home.feedo.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,40 +13,31 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String ADMIN = String.valueOf(Role.ADMIN);
+    private static final String USER = String.valueOf(Role.USER);
+    private static final String DEMO = String.valueOf(Role.DEMO);
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("user").password("user").roles("USER").and()
-                .withUser("admin").password("admin").roles("ADMIN");
+                .withUser("demo").password("demo").roles(DEMO).and()
+                .withUser("user").password("user").roles(USER).and()
+                .withUser("admin").password("admin").roles(ADMIN);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/feedo/**").access("hasAnyRole('USER','ADMIN')")
-                    .anyRequest().authenticated()
+                .antMatchers("/feed/**").access("hasAnyRole('" + USER + "','" + ADMIN + "','" + DEMO + "')")
+                .antMatchers("/audit/**").access("hasRole('" + ADMIN + "')")
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .defaultSuccessUrl("/feed")
                 .and()
                 .httpBasic()
-                    /*.loginProcessingUrl("/login")
-                    .loginPage("/loginme")
-                    .defaultSuccessUrl("/quotes/helloworld")
-                .and()
-                .logout()
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/?logout")
-                    .deleteCookies("JSESSIONID")
-                    .permitAll()*/
-                .and()
-                .csrf().disable()
-        ;
+                .and().csrf().disable();
     }
-
-    /*@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-    private static class GlobalSecurityConfiguration extends GlobalMethodSecurityConfiguration {
-    }*/
-
 }

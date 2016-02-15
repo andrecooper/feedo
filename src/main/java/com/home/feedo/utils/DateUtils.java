@@ -1,5 +1,7 @@
 package com.home.feedo.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,4 +36,16 @@ public class DateUtils {
         cal.set(Calendar.MILLISECOND,0);
         return cal.getTime();
     }
+
+    public static Date getDate(String date, String pattern){
+        SimpleDateFormat sf = new SimpleDateFormat(pattern);
+        Date newDate = null;
+        try {
+            newDate = sf.parse(date);
+        } catch (ParseException e) {
+            System.out.println("Cannot parse date");
+        }
+        return  newDate;
+    }
+
 }
