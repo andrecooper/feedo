@@ -1,5 +1,7 @@
 <%@ page import="org.springframework.security.core.Authentication" %>
 <%@ page import="org.springframework.security.core.context.SecurityContextHolder" %>
+<%@ page import="org.springframework.security.core.GrantedAuthority" %>
+<%@ page import="java.util.Collection" %>
 <!DOCTYPE html>
 
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -30,13 +32,23 @@
                 <li class="active"><a href="/feed/">Dashboard</a></li>
                 <li><a href="/audit/">Admin</a></li>
             </ul>
+
+
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <%Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+                        for (GrantedAuthority authority : authorities) {
+                                if (authority.getAuthority().equals("ROLE_DEMO")){
+                                    pageContext.getOut().write("<span style=\"color:firebrick\">DEMO USER IS UNABLE TO FILTER DATA BY DATE. DISPLAYED DATA FOR LAST 5 DAYS<span>");
+                                }
+                        }
+                    %>
+                </li>
                 <li><a href="#">
-                    <% Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                        String userName = auth.getName();
+                    <% String userName = auth.getName();
                         pageContext.getOut().write("I'm " + userName);
                     %>
-
                     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 </a></li>
                 <li><a href="/logout"><span class="glyphicon glyphicon-log-out" title="logout"
@@ -47,7 +59,7 @@
     </div>
 </nav>
 
-<div class="container" id="quoteTable" style="max-height: 50% ; overflow-y: scroll; overflow-x: hidden">
+<div class="container" id="quoteTable" style="max-height: 50% ; overflow-y: scroll; overflow-x: hidden; ">
     <div class="container task-container">
         <div class="panel panel-default">
             <div class="panel-heading">
